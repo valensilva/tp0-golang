@@ -20,6 +20,8 @@ type Paquete struct {
 	Valores []string `json:"valores"`
 }
 
+var mensajes []string
+
 func IniciarConfiguracion(filePath string) *globals.Config {
 	var config *globals.Config
 	configFile, err := os.Open(filePath)
@@ -38,16 +40,29 @@ func LeerConsola() {
 	// Leer de la consola
 	reader := bufio.NewReader(os.Stdin)
 	log.Println("Ingrese los mensajes")
-	text, _ := reader.ReadString('\n')
-	log.Print(text)
+	for {
+		text, _ := reader.ReadString('\n')
+		log.Print(text)
+		if text == "\n" {
+			break
+		}
+		mensajes = append(mensajes, text)
+	}
+
 }
 
-func GenerarYEnviarPaquete() {
-	paquete := Paquete{}
+func GenerarYEnviarPaquete(ip string, puerto int) {
+
+	LeerConsola()
+
+	paquete := Paquete{
+		Valores: mensajes,
+	}
 	// Leemos y cargamos el paquete
 
 	log.Printf("paqute a enviar: %+v", paquete)
 	// Enviamos el paqute
+	EnviarPaquete(ip, puerto, paquete)
 }
 
 func EnviarMensaje(ip string, puerto int, mensajeTxt string) {
